@@ -1,6 +1,7 @@
 package com.dak.weakview.layout;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public abstract class WeakViewAdapter<T extends WeakViewHolder> {
     private OnNotifyDataLisetener onNotifyDataLisetener;
     private List<T> viewHolderList = new ArrayList<>();
-
+    private ViewGroup viewGroupParent;
     /**
      * 更新布局的数目，主要是添加或者删除布局
      */
@@ -54,7 +55,7 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
         notifyItemView(viewHolderList.get(position), position);
     }
 
-    public abstract T onCreateViewHolder();
+    public abstract T onCreateViewHolder(ViewGroup parent);
 
     public abstract int getItemCount();
 
@@ -67,7 +68,7 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
      */
     private void addViewHolder(int count) {
         for (int i = 0; i < count; i++) {
-            viewHolderList.add(onCreateViewHolder());
+            viewHolderList.add(onCreateViewHolder(viewGroupParent));
         }
     }
 
@@ -96,6 +97,10 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
 
     public void setOnNotifyDataLisetener(OnNotifyDataLisetener onNotifyDataLisetener) {
         this.onNotifyDataLisetener = onNotifyDataLisetener;
+    }
+
+    public void setViewGroupParent(ViewGroup viewGroupParent) {
+        this.viewGroupParent = viewGroupParent;
     }
 
     protected List<T> getViewHolderList() {

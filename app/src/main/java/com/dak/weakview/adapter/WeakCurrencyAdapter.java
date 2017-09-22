@@ -2,6 +2,7 @@ package com.dak.weakview.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import com.dak.weakview.layout.WeakViewAdapter;
 import com.dak.weakview.layout.WeakViewHolder;
@@ -24,8 +25,8 @@ public abstract class WeakCurrencyAdapter<T> extends WeakViewAdapter<WeakViewHol
     }
 
     @Override
-    public WeakViewHolder onCreateViewHolder() {
-        return new WeakViewHolder(LayoutInflater.from(context).inflate(layoutId, null));
+    public WeakViewHolder onCreateViewHolder(ViewGroup parent) {
+        return new WeakViewHolder(LayoutInflater.from(context).inflate(layoutId, parent, false));
     }
 
     @Override

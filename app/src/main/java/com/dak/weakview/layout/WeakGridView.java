@@ -3,6 +3,7 @@ package com.dak.weakview.layout;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridLayout;
 
@@ -15,7 +16,6 @@ import android.widget.GridLayout;
 public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotifyDataLisetener {
     private int itemWidth = 0;
     private int rowCount = 0;
-    private int oldRowCount = 0;
     private int columnCount = 0;
     private boolean isEquallyWidth = false;
     private WeakViewAdapter adapter;
@@ -38,7 +38,6 @@ public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotify
      */
     private void updateRowCount() {
         int viewHolderCount = adapter.getViewHolderCount();
-        oldRowCount = rowCount;
         rowCount = viewHolderCount / columnCount;
         if (viewHolderCount % columnCount > 0) {
             rowCount++;
@@ -55,34 +54,27 @@ public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotify
         //获取当前容器中子View的大小（即未添加新子View时的大小）
         int childSize = getChildCount();
         //开始插入的行，如果是第一次插入则为0。
-        int startRowNum = 0;
+        int startRowNum = childSize / columnCount;
         //从哪一列开始插入，如果是第一次插入则为0。
         int startCoumnNum = childSize % columnCount;
-        //如果不是第一次插入并且最后一行没有插入满，行数需要减一，因为它是从第0行开始插入的。
-        if (oldRowCount != 0 && startCoumnNum != 0) {
-            startRowNum = oldRowCount - 1;
-        } else {
-            /**
-             * 1、如果是第一次插入（此时oldRowCount为0）
-             * 2、已经插入但是最后一行已经满了，则需要从下一行开始插入，此时oldRowCount的值正好是从下一行开始的值。
-             */
-            startRowNum = oldRowCount;
-        }
-        for (int r = startRowNum; r <= rowCount; r++)
+        for (int r = startRowNum; r <= rowCount; r++) {
             for (int c = startCoumnNum; c < columnCount; c++) {
                 //获取将要插入的子View在viewHolderList的索引值
                 int location = (r * columnCount) + c;
                 //判断location是否还可以获取到数据
                 if (location < dataSize) {
-                    Spec rowSpec = GridLayout.spec(r); // 设置它的行，从索引为0列开始
-                    Spec columnSpec = GridLayout.spec(c);//设置它的列,从索引为0列开始
-                    LayoutParams params = new LayoutParams(rowSpec, columnSpec);
+                    View itemView = adapter.getHolderView(location);
+                    LayoutParams params = (LayoutParams) itemView.getLayoutParams();
                     if (isEquallyWidth) {
                         params.width = itemWidth;
                     }
-                    addView(adapter.getHolderView(location), params);
+                    params.rowSpec = GridLayout.spec(r); // 设置它的行，从索引为0列开始
+                    params.columnSpec = GridLayout.spec(c);//设置它的列,从索引为0列开始
+                    addView(itemView);
                 }
             }
+            startCoumnNum = 0;
+        }
     }
 
     /**
@@ -99,7 +91,6 @@ public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotify
         if (viewHolderSize == 0) {
             this.removeAllViews();
             rowCount = 0;
-            oldRowCount = 0;
         }
     }
 
@@ -109,6 +100,7 @@ public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotify
 
     public void setAdapter(WeakViewAdapter mAdapter) {
         adapter = mAdapter;
+        adapter.setViewGroupParent(this);
         adapter.setOnNotifyDataLisetener(this);
     }
 
@@ -122,7 +114,6 @@ public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotify
     public void onDeleteNotifyDataLisetener() {
         deleteNotifyChanged();
     }
-
 
     /**
      * 获取屏幕宽度
