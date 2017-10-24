@@ -18,6 +18,7 @@ public class WeakLinearLayout extends LinearLayout implements WeakViewAdapter.On
 
     public void setAdapter(WeakViewAdapter adapter) {
         this.adapter = adapter;
+        adapter.setViewGroupParent(this);
         adapter.setOnNotifyDataLisetener(this);
     }
 
