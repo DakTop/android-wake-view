@@ -4,8 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.dak.weakview.layout.WeakViewAdapter;
-import com.dak.weakview.layout.WeakViewHolder;
+import com.dak.weakview.adapter.viewholder.WeakCurrencyViewHold;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  * weakView 的通用Adapter
  * Created by runTop on 2017/9/7.
  */
-public abstract class WeakCurrencyAdapter<T> extends WeakViewAdapter<WeakViewHolder> {
+public abstract class WeakCurrencyAdapter<T> extends WeakViewAdapter<WeakCurrencyViewHold> {
     private List<T> mList = new ArrayList<>();
     private Context context;
     private int layoutId;
@@ -25,8 +24,8 @@ public abstract class WeakCurrencyAdapter<T> extends WeakViewAdapter<WeakViewHol
     }
 
     @Override
-    public WeakViewHolder onCreateViewHolder(ViewGroup parent) {
-        return new WeakViewHolder(LayoutInflater.from(context).inflate(layoutId, parent, false));
+    public WeakCurrencyViewHold onCreateViewHolder(ViewGroup parent) {
+        return new WeakCurrencyViewHold(LayoutInflater.from(context).inflate(layoutId, parent, false));
     }
 
     @Override
@@ -39,11 +38,11 @@ public abstract class WeakCurrencyAdapter<T> extends WeakViewAdapter<WeakViewHol
     }
 
     @Override
-    public void notifyItemView(WeakViewHolder holder, int position) {
+    public void notifyItemView(WeakCurrencyViewHold holder, int position) {
         notifyItemView(holder, mList.get(position), position);
     }
 
-    public abstract void notifyItemView(WeakViewHolder holder, T item, int position);
+    public abstract void notifyItemView(WeakCurrencyViewHold holder, T item, int position);
 
     public void refreshData(List<T> list) {
         if (list == null)

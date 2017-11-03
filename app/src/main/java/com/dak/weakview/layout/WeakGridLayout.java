@@ -7,20 +7,22 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridLayout;
 
+import com.dak.weakview.adapter.WeakViewAdapter;
+
 
 /**
  * 自定义可动态更新的网格布局
  *
  * @author bazengliang
  */
-public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotifyDataLisetener {
+public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNotifyDataLisetener {
     private int itemWidth = 0;
     private int rowCount = 0;
     private int columnCount = 0;
     private boolean isEquallyWidth = false;
     private WeakViewAdapter adapter;
 
-    public WeakGridView(Context context, AttributeSet attrs) {
+    public WeakGridLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -31,8 +33,7 @@ public class WeakGridView extends GridLayout implements WeakViewAdapter.OnNotify
         if (columnCount > 0)
             itemWidth = getScreenWidth(this.getContext()) / columnCount;
     }
-
-
+    
     /**
      * 确定布局行数
      */

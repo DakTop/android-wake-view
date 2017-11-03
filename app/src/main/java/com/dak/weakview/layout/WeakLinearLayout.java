@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import com.dak.weakview.adapter.WeakViewAdapter;
+
 
 /**
  * 自定义可动态更新的纵向/横向列表布局

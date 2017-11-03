@@ -40,4 +40,13 @@ public class MainActivity extends AppCompatActivity {
     public void jumpToGrid(View view) {
         this.startActivity(new Intent(this, GridActivity.class));
     }
+
+    /**
+     * 跳转到Grid页面
+     *
+     * @param view
+     */
+    public void jumpToTags(View view) {
+        this.startActivity(new Intent(this, TagsActivity.class));
+    }
 }

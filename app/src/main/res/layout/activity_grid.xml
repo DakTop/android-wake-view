@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.dak.weakview.layout.WeakGridView
+    <com.dak.weakview.layout.WeakGridLayout
         android:id="@+id/weakgridlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

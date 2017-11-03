@@ -1,7 +1,9 @@
-package com.dak.weakview.layout;
+package com.dak.weakview.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.dak.weakview.adapter.viewholder.WeakViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
     private OnNotifyDataLisetener onNotifyDataLisetener;
     private List<T> viewHolderList = new ArrayList<>();
     private ViewGroup viewGroupParent;
+
     /**
      * 更新布局的数目，主要是添加或者删除布局
      */
@@ -89,12 +92,6 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
         }
     }
 
-    protected interface OnNotifyDataLisetener {
-        void onInsertNotifyDataLisetener();
-
-        void onDeleteNotifyDataLisetener();
-    }
-
     public void setOnNotifyDataLisetener(OnNotifyDataLisetener onNotifyDataLisetener) {
         this.onNotifyDataLisetener = onNotifyDataLisetener;
     }
@@ -103,16 +100,22 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
         this.viewGroupParent = viewGroupParent;
     }
 
-    protected List<T> getViewHolderList() {
+    public List<T> getViewHolderList() {
         return viewHolderList;
     }
 
-    protected int getViewHolderCount() {
+    public int getViewHolderCount() {
         return viewHolderList.size();
     }
 
-    protected View getHolderView(int position) {
+    public View getHolderView(int position) {
         return viewHolderList.get(position).getConvertView();
+    }
+
+    public interface OnNotifyDataLisetener {
+        void onInsertNotifyDataLisetener();
+
+        void onDeleteNotifyDataLisetener();
     }
 
 }

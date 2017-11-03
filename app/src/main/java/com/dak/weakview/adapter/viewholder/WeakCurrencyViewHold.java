@@ -1,4 +1,4 @@
-package com.dak.weakview.layout;
+package com.dak.weakview.adapter.viewholder;
 
 import android.util.SparseArray;
 import android.view.View;
@@ -6,15 +6,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * weakView 的ViewHolder
- * Created by bazengliang on 2016/12/1.
+ * Created by runTop on 2017/11/1.
  */
-public class WeakViewHolder {
+public class WeakCurrencyViewHold extends WeakViewHolder {
 
     private final SparseArray<View> mViews;
     private View convertView;
 
-    public WeakViewHolder(View itemView) {
+    public WeakCurrencyViewHold(View itemView) {
         convertView = itemView;
         this.mViews = new SparseArray<View>();
     }
@@ -25,6 +24,7 @@ public class WeakViewHolder {
      * @param viewId
      * @return
      */
+    @Override
     public <T extends View> T getView(int viewId) {
         View view = mViews.get(viewId);
         if (view == null) {
@@ -32,6 +32,11 @@ public class WeakViewHolder {
             mViews.put(viewId, view);
         }
         return (T) view;
+    }
+
+    @Override
+    public View getConvertView() {
+        return convertView;
     }
 
     /**
@@ -55,10 +60,6 @@ public class WeakViewHolder {
     public void setText(int viewId, String str) {
         TextView text = getView(viewId);
         text.setText(str);
-    }
-
-    protected View getConvertView() {
-        return convertView;
     }
 
 }
