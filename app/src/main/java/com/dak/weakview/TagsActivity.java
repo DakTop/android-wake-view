@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.dak.weakview.adapter.WeakTagsAdapter;
+import com.dak.weakview.adapter.viewholder.WeakTagsViewHolder;
 import com.dak.weakview.layout.WeakTagsLayout;
 
 /**
@@ -18,7 +19,12 @@ public class TagsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tags);
         weakTagsLayout = (WeakTagsLayout) findViewById(R.id.wtl_tags);
-        adapter = new WeakTagsAdapter<String>(this);
+        adapter = new WeakTagsAdapter<String>(this) {
+            @Override
+            public void notifyItemView(WeakTagsViewHolder holder, String item, int position) {
+                holder.setTagVal(item);
+            }
+        };
         weakTagsLayout.setAdapter(adapter);
         adapter.refreshData(MainActivity.list);
     }
