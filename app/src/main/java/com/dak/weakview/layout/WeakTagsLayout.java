@@ -2,6 +2,10 @@ package com.dak.weakview.layout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +13,7 @@ import android.view.ViewGroup;
 import com.dak.weakview.R;
 import com.dak.weakview.adapter.WeakTagsAdapter;
 import com.dak.weakview.adapter.WeakViewAdapter;
+import com.dak.weakview.view.WeakTagsTagView;
 
 /**
  * Tag标签布局
@@ -29,13 +34,86 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
      * 行与行之间的间隔
      */
     private float verticalLineSpace = 0;
+    /**
+     * 父布局边框圆角角度，默认90度。
+     */
+    private float layoutCorners = 0;
+    /**
+     * 父布局边框颜色
+     */
+    private int layoutStrokeColor = Color.TRANSPARENT;
+    /**
+     * 父布局背景颜色
+     */
+    private int layoutBackgroundColor = Color.TRANSPARENT;
+    /**
+     * 父布局边框宽度
+     */
+    private float layoutStrokeWidth = 0;
+    /**
+     * tag左右的padding的值
+     */
+    private float tagPaddingLOR;
+    /**
+     * tag上下的padding的值
+     */
+    private float tagPaddingTOB;
+    /**
+     * tag文字大小
+     */
+    private float tagTextSize;
+    /**
+     * tag文字颜色
+     */
+    private int tagTextColor;
+    /**
+     * tag背景颜色
+     */
+    private int tagBackgroundColor;
+    /**
+     * tag边框颜色
+     */
+    private int tagStrokeColor;
+    /**
+     * tag边框大小
+     */
+    private float tagStrokeWidth;
+    /**
+     * tag边框角度
+     */
+    private float tagStrokeCorners;
+    /**
+     * 父布局绘制区域
+     */
+    private RectF backgroundRect;
+    private Paint paint;
+
+    private int mBackgroundColor = Color.parseColor("#11FF0000");
 
     public WeakTagsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WeakTagsLayout);
-        horizontalColumnSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_horizontalColumnSpace, 0);
-        verticalLineSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_verticalLinesSpace, 0);
+        horizontalColumnSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_horizontalColumnSpace, 20);
+        verticalLineSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_verticalLinesSpace, 20);
+        layoutCorners = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_corners, 0);
+        layoutStrokeColor = typedArray.getColor(R.styleable.WeakTagsLayout_layout_strokeColor, Color.TRANSPARENT);
+        layoutStrokeWidth = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_strokeWidth, 0);
+        layoutBackgroundColor = typedArray.getColor(R.styleable.WeakTagsLayout_layout_backgroundColor, Color.TRANSPARENT);
+        tagPaddingLOR = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_paddingLOR, 20);
+        tagPaddingTOB = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_paddingTOB, 10);
+        tagTextSize = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_textSize, 25);
+        tagTextColor = typedArray.getColor(R.styleable.WeakTagsLayout_tag_textColor, Color.BLACK);
+        tagBackgroundColor = typedArray.getColor(R.styleable.WeakTagsLayout_tag_backgroundColor, Color.TRANSPARENT);
+        tagStrokeColor = typedArray.getColor(R.styleable.WeakTagsLayout_tag_strokeColor, Color.GRAY);
+        tagStrokeWidth = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_strokeWidth, 2);
+        tagStrokeCorners = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_strokeCorners, 0);
         typedArray.recycle();
+        //默认自定义ViewGroup是不会调用onDraw方法，需要手动调用setWillNotDraw方法或者设置ViewGroup的背景才会执行onDraw方法
+        setWillNotDraw(false);
+        backgroundRect = new RectF();
+        paint = new Paint();
+        paint.setAntiAlias(true);
+
     }
 
     @Override
@@ -99,19 +177,54 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
             //
             currentLeft += horizontalColumnSpace;
         }
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        backgroundRect.set(layoutStrokeWidth, layoutStrokeWidth, w - layoutStrokeWidth, h - layoutStrokeWidth);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        //绘制背景
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(layoutBackgroundColor);
+        canvas.drawRoundRect(backgroundRect, layoutCorners, layoutCorners, paint);
+        //绘制边框
+        paint.setStrokeWidth(layoutStrokeWidth);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(layoutStrokeColor);
+        canvas.drawRoundRect(backgroundRect, layoutCorners, layoutCorners, paint);
     }
 
     @Override
     public void onInsertNotifyDataLisetener() {
         int insertCount = adapter.getViewHolderCount() - getChildCount();
         for (int i = 0; i < insertCount; i++) {
-            this.addView(adapter.getHolderView(getChildCount()));
+            View view = adapter.getHolderView(getChildCount());
+            if (view instanceof WeakTagsTagView) {
+                WeakTagsTagView weakTagsTagView = (WeakTagsTagView) view;
+                weakTagsTagView.setTagBackgroundColor(tagBackgroundColor);
+                weakTagsTagView.setTagPaddingLOR(tagPaddingLOR);
+                weakTagsTagView.setTagPaddingTOB(tagPaddingTOB);
+                weakTagsTagView.setTagStrokeColor(tagStrokeColor);
+                weakTagsTagView.setTagStrokeCorners(tagStrokeCorners);
+                weakTagsTagView.setTagStrokeWidth(tagStrokeWidth);
+                weakTagsTagView.setTagTextColor(tagTextColor);
+                weakTagsTagView.setTagTextSize(tagTextSize);
+            }
+            this.addView(view);
         }
     }
 
     @Override
     public void onDeleteNotifyDataLisetener() {
-
+        int removeCount = getChildCount() - adapter.getViewHolderCount();
+        while (removeCount > 0) {
+            this.removeViewAt(getChildCount() - 1);
+            removeCount--;
+        }
     }
 
     public void setAdapter(WeakTagsAdapter adapter) {

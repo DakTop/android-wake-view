@@ -2,7 +2,33 @@
 <resources>
 
     <declare-styleable name="WeakTagsLayout">
+        <!--横向的tag之间的间距-->
         <attr name="layout_horizontalColumnSpace" format="dimension" />
+        <!--纵向的tag之间的间距-->
         <attr name="layout_verticalLinesSpace" format="dimension" />
+        <!--父布局边框角度-->
+        <attr name="layout_corners" format="dimension" />
+        <!--父布局边框颜色-->
+        <attr name="layout_strokeColor" format="color" />
+        <!--父布局边框宽度-->
+        <attr name="layout_strokeWidth" format="dimension" />
+        <!--父布局背景颜色-->
+        <attr name="layout_backgroundColor" format="color" />
+        <!--tag左右的padding的值-->
+        <attr name="tag_paddingLOR" format="dimension" />
+        <!--tag上下的padding的值-->
+        <attr name="tag_paddingTOB" format="dimension" />
+        <!--tag文字大小-->
+        <attr name="tag_textSize" format="dimension" />
+        <!--tag文字颜色-->
+        <attr name="tag_textColor" format="color" />
+        <!--tag背景颜色-->
+        <attr name="tag_backgroundColor" format="color" />
+        <!--tag边框颜色-->
+        <attr name="tag_strokeColor" format="color" />
+        <!--tag边框大小-->
+        <attr name="tag_strokeWidth" format="dimension" />
+        <!--tag边框角度-->
+        <attr name="tag_strokeCorners" format="dimension" />
     </declare-styleable>
 </resources>
