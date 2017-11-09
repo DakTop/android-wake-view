@@ -5,8 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -87,8 +89,8 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
      */
     private RectF backgroundRect;
     private Paint paint;
-
-    private int mBackgroundColor = Color.parseColor("#11FF0000");
+    private OnTagItemClickListener onItemClickListener;
+    private int clickPosition = -1;
 
     public WeakTagsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -228,7 +230,59 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
     }
 
     public void setAdapter(WeakTagsAdapter adapter) {
+        this.removeAllViews();
         this.adapter = adapter;
         adapter.setOnNotifyDataLisetener(this);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return true;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                int childCount = getChildCount();
+                for (int i = 0; i < childCount; i++) {
+                    if (childContainsEventXY(getChildAt(i), event)) {
+                        clickPosition = i;
+                        break;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (clickPosition >= 0 && onItemClickListener != null && childContainsEventXY(getChildAt(clickPosition), event)) {
+                    onItemClickListener.onTagItemClickListener(clickPosition, getChildAt(clickPosition));
+                    clickPosition = -1;
+                }
+                break;
+            default:
+                super.onTouchEvent(event);
+                break;
+        }
+        return true;
+    }
+
+    /**
+     * 判断屏幕接受的事件是否落在传递进来的View中
+     *
+     * @param view
+     * @param event
+     * @return
+     */
+    private boolean childContainsEventXY(View view, MotionEvent event) {
+        Rect rect = new Rect();
+        view.getHitRect(rect);
+        return rect.contains((int) event.getX(), (int) event.getY());
+    }
+
+    public interface OnTagItemClickListener {
+        void onTagItemClickListener(int position, View view);
+    }
+
+    public void setOnItemClickListener(OnTagItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 }

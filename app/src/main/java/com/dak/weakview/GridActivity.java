@@ -2,6 +2,8 @@ package com.dak.weakview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Toast;
 
 import com.dak.weakview.adapter.WeakCurrencyAdapter;
 import com.dak.weakview.adapter.viewholder.WeakCurrencyViewHold;
@@ -19,6 +21,12 @@ public class GridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
         weakGridView = (WeakGridLayout) findViewById(R.id.weakgridlayout);
+        weakGridView.setOnItemClickListener(new WeakGridLayout.OnItemClickListener() {
+            @Override
+            public void onWeakItemClickListener(int position, View view) {
+                Toast.makeText(GridActivity.this, adapter.getItem(position), Toast.LENGTH_SHORT).show();
+            }
+        });
         //设置每一行有多少元素，必须设置。
         weakGridView.setColumnCount(3);
         adapter = new WeakCurrencyAdapter<String>(this, R.layout.layout_weak_item) {

@@ -21,6 +21,7 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
     private int columnCount = 0;
     private boolean isEquallyWidth = false;
     private WeakViewAdapter adapter;
+    private OnItemClickListener itemClickListener;
 
     public WeakGridLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,7 +34,7 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
         if (columnCount > 0)
             itemWidth = getScreenWidth(this.getContext()) / columnCount;
     }
-    
+
     /**
      * 确定布局行数
      */
@@ -61,16 +62,24 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
         for (int r = startRowNum; r <= rowCount; r++) {
             for (int c = startCoumnNum; c < columnCount; c++) {
                 //获取将要插入的子View在viewHolderList的索引值
-                int location = (r * columnCount) + c;
+                final int location = (r * columnCount) + c;
                 //判断location是否还可以获取到数据
                 if (location < dataSize) {
-                    View itemView = adapter.getHolderView(location);
+                    final View itemView = adapter.getHolderView(location);
                     LayoutParams params = (LayoutParams) itemView.getLayoutParams();
                     if (isEquallyWidth) {
                         params.width = itemWidth;
                     }
                     params.rowSpec = GridLayout.spec(r); // 设置它的行，从索引为0列开始
                     params.columnSpec = GridLayout.spec(c);//设置它的列,从索引为0列开始
+                    itemView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (itemClickListener != null) {
+                                itemClickListener.onWeakItemClickListener(location, itemView);
+                            }
+                        }
+                    });
                     addView(itemView);
                 }
             }
@@ -124,5 +133,13 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);
         return outMetrics.widthPixels;
+    }
+
+    public interface OnItemClickListener {
+        void onWeakItemClickListener(int position, View view);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 }

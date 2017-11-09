@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * tag布局的adapter
  * Created by runTop on 2017/11/1.
  */
 public abstract class WeakTagsAdapter<T> extends WeakViewAdapter<WeakTagsViewHolder> {
@@ -32,6 +33,10 @@ public abstract class WeakTagsAdapter<T> extends WeakViewAdapter<WeakTagsViewHol
             tagView = new WeakTagsTagView(context);
         }
         return new WeakTagsViewHolder(tagView);
+    }
+
+    public T getItem(int position) {
+        return position >= 0 && position < mList.size() ? mList.get(position) : null;
     }
 
     @Override
