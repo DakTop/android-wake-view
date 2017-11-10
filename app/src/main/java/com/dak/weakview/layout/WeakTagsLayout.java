@@ -17,6 +17,9 @@ import com.dak.weakview.adapter.WeakTagsAdapter;
 import com.dak.weakview.adapter.WeakViewAdapter;
 import com.dak.weakview.view.WeakTagsTagView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Tag标签布局
  * Created by runTop on 2017/10/31.
@@ -85,12 +88,36 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
      */
     private float tagStrokeCorners;
     /**
+     * 当选择模式为限制个数时，selectLimitCount代表最多能选几个
+     */
+    private int selectLimitCount = 0;
+    /**
+     * 选中tag背景颜色
+     */
+    private int selectTagBgColor;
+    /**
+     * 选中tag文字颜色
+     */
+    private int selectTagTextColor;
+    /**
+     * 选中tag边框颜色
+     */
+    private int selectTagStrokeColor;
+    /**
      * 父布局绘制区域
      */
     private RectF backgroundRect;
     private Paint paint;
     private OnTagItemClickListener onItemClickListener;
     private int clickPosition = -1;
+    //单击选择模式
+    private SelectMode clickSelectMode;
+    //子View列表
+    private List<OnTagSelectListener> listTagsSelectListener = new ArrayList<>();
+    //  多选模式下选中的Position列表
+    private List<Integer> selectPositionList = new ArrayList<>();
+    //  单选模式下选中的Position
+    private int selectSinglePosition = -1;
 
     public WeakTagsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -109,6 +136,23 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
         tagStrokeColor = typedArray.getColor(R.styleable.WeakTagsLayout_tag_strokeColor, Color.GRAY);
         tagStrokeWidth = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_strokeWidth, 2);
         tagStrokeCorners = typedArray.getDimension(R.styleable.WeakTagsLayout_tag_strokeCorners, 0);
+        selectLimitCount = typedArray.getInteger(R.styleable.WeakTagsLayout_select_limit_count, -1);
+        selectTagBgColor = typedArray.getInteger(R.styleable.WeakTagsLayout_select_tagBgColor, Color.GRAY);
+        selectTagTextColor = typedArray.getInteger(R.styleable.WeakTagsLayout_select_tagTextColor, Color.GREEN);
+        selectTagStrokeColor = typedArray.getInteger(R.styleable.WeakTagsLayout_select_tagStrokeColor, Color.GREEN);
+        //
+        int selectMode = typedArray.getColor(R.styleable.WeakTagsLayout_select_click, 0);
+        switch (selectMode) {
+            case 1://单选模式
+                clickSelectMode = SelectMode.single;
+                break;
+            case 2://多选模式
+                clickSelectMode = SelectMode.more;
+                break;
+            default://默认模式
+                clickSelectMode = SelectMode.normal;
+                break;
+        }
         typedArray.recycle();
         //默认自定义ViewGroup是不会调用onDraw方法，需要手动调用setWillNotDraw方法或者设置ViewGroup的背景才会执行onDraw方法
         setWillNotDraw(false);
@@ -205,33 +249,40 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
         int insertCount = adapter.getViewHolderCount() - getChildCount();
         for (int i = 0; i < insertCount; i++) {
             View view = adapter.getHolderView(getChildCount());
-            if (view instanceof WeakTagsTagView) {
-                WeakTagsTagView weakTagsTagView = (WeakTagsTagView) view;
-                weakTagsTagView.setTagBackgroundColor(tagBackgroundColor);
-                weakTagsTagView.setTagPaddingLOR(tagPaddingLOR);
-                weakTagsTagView.setTagPaddingTOB(tagPaddingTOB);
-                weakTagsTagView.setTagStrokeColor(tagStrokeColor);
-                weakTagsTagView.setTagStrokeCorners(tagStrokeCorners);
-                weakTagsTagView.setTagStrokeWidth(tagStrokeWidth);
-                weakTagsTagView.setTagTextColor(tagTextColor);
-                weakTagsTagView.setTagTextSize(tagTextSize);
-            }
+            WeakTagsTagView weakTagsTagView = (WeakTagsTagView) view;
+            weakTagsTagView.setTagBackgroundColor(tagBackgroundColor);
+            weakTagsTagView.setTagPaddingLOR(tagPaddingLOR);
+            weakTagsTagView.setTagPaddingTOB(tagPaddingTOB);
+            weakTagsTagView.setTagStrokeColor(tagStrokeColor);
+            weakTagsTagView.setTagStrokeCorners(tagStrokeCorners);
+            weakTagsTagView.setTagStrokeWidth(tagStrokeWidth);
+            weakTagsTagView.setTagTextColor(tagTextColor);
+            weakTagsTagView.setTagTextSize(tagTextSize);
+            weakTagsTagView.setSelectTagBgColor(selectTagBgColor);
+            weakTagsTagView.setSelectTagTextColor(selectTagTextColor);
+            weakTagsTagView.setSelectTagStrokeColor(selectTagStrokeColor);
+            listTagsSelectListener.add(weakTagsTagView);
             this.addView(view);
         }
     }
+
 
     @Override
     public void onDeleteNotifyDataLisetener() {
         int removeCount = getChildCount() - adapter.getViewHolderCount();
         while (removeCount > 0) {
-            this.removeViewAt(getChildCount() - 1);
+            int position = getChildCount() - 1;
+            this.removeViewAt(position);
+            listTagsSelectListener.remove(position);
             removeCount--;
         }
     }
 
     public void setAdapter(WeakTagsAdapter adapter) {
         this.removeAllViews();
+        listTagsSelectListener.clear();
         this.adapter = adapter;
+        adapter.setViewGroupParent(this);
         adapter.setOnNotifyDataLisetener(this);
     }
 
@@ -254,7 +305,20 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
                 break;
             case MotionEvent.ACTION_UP:
                 if (clickPosition >= 0 && onItemClickListener != null && childContainsEventXY(getChildAt(clickPosition), event)) {
-                    onItemClickListener.onTagItemClickListener(clickPosition, getChildAt(clickPosition));
+                    View view = getChildAt(clickPosition);
+                    //判断选择模式
+                    switch (clickSelectMode) {
+                        case normal:
+                            break;
+                        case single:
+                            selectSinglePosition = clickPosition;
+                            clickSelectSingle(clickPosition);
+                            break;
+                        case more:
+                            clickSelectMore(clickPosition);
+                            break;
+                    }
+                    onItemClickListener.onTagItemClickListener(clickPosition, view);
                     clickPosition = -1;
                 }
                 break;
@@ -263,6 +327,37 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
                 break;
         }
         return true;
+    }
+
+    /**
+     * 单选
+     *
+     * @param position
+     */
+    private void clickSelectSingle(int position) {
+        int count = listTagsSelectListener.size();
+        for (int i = 0; i < count; i++) {
+            if (position == i) {
+                listTagsSelectListener.get(i).itemSelect(true);
+            } else {
+                listTagsSelectListener.get(i).itemSelect(false);
+            }
+        }
+    }
+
+    /**
+     * 多选
+     *
+     * @param position
+     */
+    public void clickSelectMore(int position) {
+        if (selectPositionList.contains(position)) {
+            listTagsSelectListener.get(position).itemSelect(false);
+            selectPositionList.remove(Integer.valueOf(position));
+        } else if (selectLimitCount <= 0 || selectPositionList.size() < selectLimitCount) {
+            listTagsSelectListener.get(position).itemSelect(true);
+            selectPositionList.add(position);
+        }
     }
 
     /**
@@ -284,5 +379,35 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
 
     public void setOnItemClickListener(OnTagItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public enum SelectMode {
+        normal, single, more;
+    }
+
+    public void setSelectLimitCount(int selectLimitCount) {
+        this.selectLimitCount = selectLimitCount;
+    }
+
+    public void setClickSelectMode(SelectMode clickSelectMode) {
+        selectPositionList.clear();
+        selectSinglePosition = -1;
+        this.clickSelectMode = clickSelectMode;
+    }
+
+    public SelectMode getClickSelectMode() {
+        return clickSelectMode;
+    }
+
+    public interface OnTagSelectListener {
+        void itemSelect(boolean select);
+    }
+
+    public int getSelectSinglePosition() {
+        return selectSinglePosition;
+    }
+
+    public List<Integer> getSelectSelectPosition() {
+        return selectPositionList;
     }
 }

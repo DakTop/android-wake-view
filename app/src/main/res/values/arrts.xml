@@ -30,5 +30,22 @@
         <attr name="tag_strokeWidth" format="dimension" />
         <!--tag边框角度-->
         <attr name="tag_strokeCorners" format="dimension" />
+        <!--点击选中模式-->
+        <attr name="select_click" format="enum">
+            <!--默认模式-->
+            <enum name="normal" value="0" />
+            <!--单选模式-->
+            <enum name="single" value="1" />
+            <!--多选模式-->
+            <enum name="more" value="2" />
+        </attr>
+        <!--限制选中个数，只有当选中模式为限制时才有作用-->
+        <attr name="select_limit_count" format="integer" />
+        <!--选中tag背景颜色-->
+        <attr name="select_tagBgColor" format="color" />
+        <!--选中tag文字颜色-->
+        <attr name="select_tagTextColor" format="color" />
+        <!--选中tag边框颜色-->
+        <attr name="select_tagStrokeColor" format="color" />
     </declare-styleable>
 </resources>

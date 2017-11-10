@@ -6,11 +6,13 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 
+import com.dak.weakview.layout.WeakTagsLayout;
+
 /**
  * 具体标签
  * Created by runTop on 2017/11/1.
  */
-public class WeakTagsTagView extends View {
+public class WeakTagsTagView extends View implements WeakTagsLayout.OnTagSelectListener {
     private Paint paint;
     private RectF rectF;
     private String textStr = "default";
@@ -48,6 +50,22 @@ public class WeakTagsTagView extends View {
      * tag边框角度
      */
     private float tagStrokeCorners;
+    /**
+     * 选中tag背景颜色
+     */
+    private int selectTagBgColor;
+    /**
+     * 选中tag文字颜色
+     */
+    private int selectTagTextColor;
+    /**
+     * 选中tag边框颜色
+     */
+    private int selectTagStrokeColor;
+    /**
+     * 选中标记，true为选中，false为未选中
+     */
+    private boolean selectItem = false;
 
     public WeakTagsTagView(Context context) {
         super(context);
@@ -77,19 +95,19 @@ public class WeakTagsTagView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         //绘制边框
-        paint.setColor(tagStrokeColor);
+        paint.setColor(selectItem ? selectTagStrokeColor : tagStrokeColor);
         paint.setStrokeWidth(tagStrokeWidth);
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawRoundRect(rectF, tagStrokeCorners, tagStrokeCorners, paint);
         //绘制背景
-        paint.setColor(tagBackgroundColor);
+        paint.setColor(selectItem ? selectTagBgColor : tagBackgroundColor);
         paint.setStyle(Paint.Style.FILL);
         canvas.drawRoundRect(rectF, tagStrokeCorners, tagStrokeCorners, paint);
         //绘制文字
         float x = (getWidth() - textW) / 2;
         float y = (getHeight() - textH) / 2 + textH - tagPaddingTOB - 5;
         paint.setTextSize(tagTextSize);
-        paint.setColor(tagTextColor);
+        paint.setColor(selectItem ? selectTagTextColor : tagTextColor);
         paint.setTextAlign(Paint.Align.LEFT);
         canvas.drawText(textStr, x, y, paint);
     }
@@ -129,5 +147,23 @@ public class WeakTagsTagView extends View {
 
     public void setTagStrokeCorners(float tagStrokeCorners) {
         this.tagStrokeCorners = tagStrokeCorners;
+    }
+
+    public void setSelectTagBgColor(int selectTagBgColor) {
+        this.selectTagBgColor = selectTagBgColor;
+    }
+
+    public void setSelectTagTextColor(int selectTagTextColor) {
+        this.selectTagTextColor = selectTagTextColor;
+    }
+
+    public void setSelectTagStrokeColor(int selectTagStrokeColor) {
+        this.selectTagStrokeColor = selectTagStrokeColor;
+    }
+
+    @Override
+    public void itemSelect(boolean select) {
+        selectItem = select;
+        invalidate();
     }
 }

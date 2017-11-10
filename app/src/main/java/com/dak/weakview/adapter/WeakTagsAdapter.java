@@ -1,11 +1,10 @@
 package com.dak.weakview.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.dak.weakview.adapter.viewholder.WeakTagsViewHolder;
+import com.dak.weakview.layout.WeakTagsLayout;
 import com.dak.weakview.view.WeakTagsTagView;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.List;
 public abstract class WeakTagsAdapter<T> extends WeakViewAdapter<WeakTagsViewHolder> {
     private Context context;
     private List<T> mList = new ArrayList<>();
-    private int layoutId;
+    private WeakTagsLayout weakTagsLayout;
 
     public WeakTagsAdapter(Context context) {
         this.context = context;
@@ -26,13 +25,8 @@ public abstract class WeakTagsAdapter<T> extends WeakViewAdapter<WeakTagsViewHol
 
     @Override
     public WeakTagsViewHolder onCreateViewHolder(ViewGroup parent) {
-        View tagView = null;
-        if (layoutId != 0) {
-            tagView = LayoutInflater.from(context).inflate(layoutId, parent, false);
-        } else {
-            tagView = new WeakTagsTagView(context);
-        }
-        return new WeakTagsViewHolder(tagView);
+        weakTagsLayout = (WeakTagsLayout) parent;
+        return new WeakTagsViewHolder(new WeakTagsTagView(context));
     }
 
     public T getItem(int position) {
@@ -59,8 +53,33 @@ public abstract class WeakTagsAdapter<T> extends WeakViewAdapter<WeakTagsViewHol
         this.notifyDataSetChanged();
     }
 
+    /**
+     * 获取单选选中的数据
+     *
+     * @return
+     */
+    public T getSelectSingleData() {
+        if (weakTagsLayout != null && weakTagsLayout.getSelectSinglePosition() >= 0) {
+            return mList.get(weakTagsLayout.getSelectSinglePosition());
+        }
+        return null;
+    }
 
-    public void setLayoutId(int layoutId) {
-        this.layoutId = layoutId;
+    /**
+     * 获取多选选中的数据
+     *
+     * @return
+     */
+    public List<T> getSelectMoreData() {
+        List<T> list = null;
+        if (weakTagsLayout != null && weakTagsLayout.getSelectSelectPosition().size() > 0) {
+            list = new ArrayList<>();
+            List<Integer> selectList = weakTagsLayout.getSelectSelectPosition();
+            int count = selectList.size();
+            for (int i = 0; i < count; i++) {
+                list.add(mList.get(selectList.get(i)));
+            }
+        }
+        return list;
     }
 }

@@ -5,6 +5,7 @@ import android.view.View;
 import com.dak.weakview.view.WeakTagsTagView;
 
 /**
+ * tag的ViewHolder
  * Created by bazengliang on 2016/12/1.
  */
 public class WeakTagsViewHolder extends WeakCurrencyViewHold {

@@ -4,11 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.dak.weakview.layout.WeakTagsLayout
+    <com.dak.weakview.layout.WeakTagsLayout xmlns:tagLayout="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wtl_tags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:padding="10dp" />
+        android:padding="10dp"
+        tagLayout:select_click="single"
+        tagLayout:select_limit_count="4" />
 
 </LinearLayout>

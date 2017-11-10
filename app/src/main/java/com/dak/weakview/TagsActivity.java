@@ -35,6 +35,7 @@ public class TagsActivity extends AppCompatActivity {
         };
         weakTagsLayout.setAdapter(adapter);
         adapter.refreshData(MainActivity.list);
+
     }
 
 }
