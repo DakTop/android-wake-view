@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -109,6 +110,7 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
     private RectF backgroundRect;
     private Paint paint;
     private OnTagItemClickListener onItemClickListener;
+    //被点击的子View的位置
     private int clickPosition = -1;
     //单击选择模式
     private SelectMode clickSelectMode;
@@ -118,9 +120,11 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
     private List<Integer> selectPositionList = new ArrayList<>();
     //  单选模式下选中的Position
     private int selectSinglePosition = -1;
+    private ViewDragHelper mViewDragHelper;
 
     public WeakTagsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mViewDragHelper = ViewDragHelper.create(this, 1.0f, new ViewDragHelperCallback());
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WeakTagsLayout);
         horizontalColumnSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_horizontalColumnSpace, 20);
         verticalLineSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_verticalLinesSpace, 20);
@@ -288,11 +292,12 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return true;
+        return mViewDragHelper.shouldInterceptTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        mViewDragHelper.processTouchEvent(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 int childCount = getChildCount();
@@ -303,9 +308,10 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
                     }
                 }
                 break;
+            case MotionEvent.ACTION_MOVE:
+                break;
             case MotionEvent.ACTION_UP:
                 if (clickPosition >= 0 && onItemClickListener != null && childContainsEventXY(getChildAt(clickPosition), event)) {
-                    View view = getChildAt(clickPosition);
                     //判断选择模式
                     switch (clickSelectMode) {
                         case normal:
@@ -318,12 +324,9 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
                             clickSelectMore(clickPosition);
                             break;
                     }
-                    onItemClickListener.onTagItemClickListener(clickPosition, view);
+                    onItemClickListener.onTagItemClickListener(clickPosition, getChildAt(clickPosition));
                     clickPosition = -1;
                 }
-                break;
-            default:
-                super.onTouchEvent(event);
                 break;
         }
         return true;
@@ -409,5 +412,24 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
 
     public List<Integer> getSelectSelectPosition() {
         return selectPositionList;
+    }
+
+    private class ViewDragHelperCallback extends ViewDragHelper.Callback {
+
+        @Override
+        public int clampViewPositionHorizontal(View child, int left, int dx) {
+            return Math.min(Math.max(left, getPaddingLeft()), getWidth() - getPaddingRight() - child.getWidth());
+        }
+
+        @Override
+        public int clampViewPositionVertical(View child, int top, int dy) {
+            return Math.min(Math.max(top, getPaddingTop()), getHeight() - getPaddingBottom() - child.getHeight());
+        }
+
+        @Override
+        public boolean tryCaptureView(View child, int pointerId) {
+
+            return true;
+        }
     }
 }
