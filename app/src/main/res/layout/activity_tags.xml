@@ -11,7 +11,7 @@
         android:layout_margin="10dp"
         android:padding="10dp"
         android:background="@color/colorAccent"
-        tagLayout:select_click="single"
+        tagLayout:select_click="more"
         tagLayout:select_limit_count="4" />
 
 </LinearLayout>

@@ -120,11 +120,9 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
     private List<Integer> selectPositionList = new ArrayList<>();
     //  单选模式下选中的Position
     private int selectSinglePosition = -1;
-    private ViewDragHelper mViewDragHelper;
 
     public WeakTagsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mViewDragHelper = ViewDragHelper.create(this, 1.0f, new ViewDragHelperCallback());
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WeakTagsLayout);
         horizontalColumnSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_horizontalColumnSpace, 20);
         verticalLineSpace = typedArray.getDimension(R.styleable.WeakTagsLayout_layout_verticalLinesSpace, 20);
@@ -291,13 +289,7 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return mViewDragHelper.shouldInterceptTouchEvent(ev);
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mViewDragHelper.processTouchEvent(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 int childCount = getChildCount();
@@ -414,22 +406,4 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
         return selectPositionList;
     }
 
-    private class ViewDragHelperCallback extends ViewDragHelper.Callback {
-
-        @Override
-        public int clampViewPositionHorizontal(View child, int left, int dx) {
-            return Math.min(Math.max(left, getPaddingLeft()), getWidth() - getPaddingRight() - child.getWidth());
-        }
-
-        @Override
-        public int clampViewPositionVertical(View child, int top, int dy) {
-            return Math.min(Math.max(top, getPaddingTop()), getHeight() - getPaddingBottom() - child.getHeight());
-        }
-
-        @Override
-        public boolean tryCaptureView(View child, int pointerId) {
-
-            return true;
-        }
-    }
 }
