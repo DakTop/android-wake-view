@@ -64,6 +64,12 @@ public abstract class WeakViewAdapter<T extends WeakViewHolder> {
 
     public abstract void notifyItemView(T holder, int position);
 
+    public void notifyItemViewWithHolder(int holderPosition, int position) {
+        notifyItemView(viewHolderList.get(holderPosition), position);
+    }
+
+    ;
+
     /**
      * 添加ViewHolder
      *

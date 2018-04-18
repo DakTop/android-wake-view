@@ -17,7 +17,8 @@
         </activity>
         <activity android:name=".LinearActivity" />
         <activity android:name=".GridActivity" />
-        <activity android:name=".TagsActivity"></activity>
+        <activity android:name=".TagsActivity" />
+        <activity android:name=".WeakCardOverlapActivity"></activity>
     </application>
 
 </manifest>
