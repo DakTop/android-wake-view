@@ -142,4 +142,8 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
     public void setOnItemClickListener(OnItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
+
+    public WeakViewAdapter getAdapter() {
+        return adapter;
+    }
 }

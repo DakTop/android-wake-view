@@ -405,5 +405,8 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
     public List<Integer> getSelectSelectPosition() {
         return selectPositionList;
     }
-
+    
+    public WeakViewAdapter getAdapter() {
+        return adapter;
+    }
 }
