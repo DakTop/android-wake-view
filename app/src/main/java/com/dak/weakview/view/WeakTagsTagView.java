@@ -10,7 +10,7 @@ import com.dak.weakview.layout.WeakTagsLayout;
 
 /**
  * 具体标签
- * Created by runTop on 2017/11/1.
+ * Created by dak on 2017/11/1.
  */
 public class WeakTagsTagView extends View implements WeakTagsLayout.OnTagSelectListener {
     private Paint paint;

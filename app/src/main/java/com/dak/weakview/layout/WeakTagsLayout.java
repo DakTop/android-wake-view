@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * Tag标签布局
- * Created by runTop on 2017/10/31.
+ * Created by dak on 2017/10/31.
  */
 public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotifyDataLisetener {
     private WeakTagsAdapter adapter;

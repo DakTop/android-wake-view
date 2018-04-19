@@ -20,7 +20,7 @@ import com.dak.weakview.utils.Tool;
 
 /**
  * 层叠卡片列表
- * Created by runTop on 2018/4/8.
+ * Created by dak on 2018/4/8.
  */
 public class WeakCardOverlapLayout extends RelativeLayout implements WeakViewAdapter
         .OnNotifyDataLisetener {

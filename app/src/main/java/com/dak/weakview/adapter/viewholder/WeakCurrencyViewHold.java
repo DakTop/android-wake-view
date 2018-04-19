@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by runTop on 2017/11/1.
+ * Created by dak on 2017/11/1.
  */
 public class WeakCurrencyViewHold extends WeakViewHolder {
 

@@ -4,7 +4,7 @@ import android.view.View;
 
 /**
  * weakView 的ViewHolder
- * Created by bazengliang on 2016/12/1.
+ * Created by dak on 2016/12/1.
  */
 public abstract class WeakViewHolder {
 

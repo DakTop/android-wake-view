@@ -13,7 +13,7 @@ import com.dak.weakview.adapter.WeakViewAdapter;
 /**
  * 自定义可动态更新的网格布局
  *
- * @author bazengliang
+ * @author dak
  */
 public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNotifyDataLisetener {
     private int itemWidth = 0;

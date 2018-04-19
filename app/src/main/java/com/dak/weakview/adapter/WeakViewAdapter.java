@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * weakView 的Adapter
- * Created by bazengliang on 2016/12/1.
+ * Created by dak on 2016/12/1.
  */
 
 public abstract class WeakViewAdapter<T extends WeakViewHolder> {

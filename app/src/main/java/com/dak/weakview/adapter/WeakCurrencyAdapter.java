@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * weakView 的通用Adapter
- * Created by runTop on 2017/9/7.
+ * Created by dak on 2017/9/7.
  */
 public abstract class WeakCurrencyAdapter<T> extends WeakViewAdapter<WeakCurrencyViewHold> {
     private List<T> mList = new ArrayList<>();

@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * tag布局的adapter
- * Created by runTop on 2017/11/1.
+ * Created by dak on 2017/11/1.
  */
 public abstract class WeakTagsAdapter<T> extends WeakViewAdapter<WeakTagsViewHolder> {
     private Context context;

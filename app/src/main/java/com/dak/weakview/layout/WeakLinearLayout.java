@@ -10,7 +10,7 @@ import com.dak.weakview.adapter.WeakViewAdapter;
 
 /**
  * 自定义可动态更新的纵向/横向列表布局
- * Created by bazengliang on 2017/1/16.
+ * Created by dak on 2017/1/16.
  */
 public class WeakLinearLayout extends LinearLayout implements WeakViewAdapter.OnNotifyDataLisetener {
     private WeakViewAdapter adapter;
