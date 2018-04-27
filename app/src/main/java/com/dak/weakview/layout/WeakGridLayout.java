@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.GridLayout;
 
 import com.dak.weakview.adapter.WeakViewAdapter;
+import com.dak.weakview.interfaces.OnWeakItemClickListener;
 
 
 /**
@@ -21,7 +22,7 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
     private int columnCount = 0;
     private boolean isEquallyWidth = false;
     private WeakViewAdapter adapter;
-    private OnItemClickListener itemClickListener;
+    private OnWeakItemClickListener itemClickListener;
 
     public WeakGridLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -135,11 +136,7 @@ public class WeakGridLayout extends GridLayout implements WeakViewAdapter.OnNoti
         return outMetrics.widthPixels;
     }
 
-    public interface OnItemClickListener {
-        void onWeakItemClickListener(int position, View view);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+    public void setOnItemClickListener(OnWeakItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 

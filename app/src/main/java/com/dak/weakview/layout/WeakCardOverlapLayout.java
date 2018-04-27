@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.dak.weakview.adapter.WeakViewAdapter;
+import com.dak.weakview.interfaces.OnWeakItemClickListener;
 import com.dak.weakview.utils.Tool;
 
 /**
@@ -26,26 +27,32 @@ public class WeakCardOverlapLayout extends RelativeLayout implements WeakViewAda
         .OnNotifyDataLisetener {
     private WeakViewAdapter adapter;
     private ViewDragHelper viewDragHelper;
-    //层叠卡片的个数
-    private int cardCount = 3;
+
     private boolean isRemoveChil = false;
     private int moveX;
     private int moveY;
+    //层叠卡片的个数
+    private int cardCount = 3;
     //层叠卡片的缩放比例，无缩放为0
-    private final float scaleVal = 0.15f;
+    private float scaleVal = 0.15f;
     //层叠的卡片层次的高度
     private int viewStackUpHeight = 15;
-    private WeakCardOverlapLayout.OnItemClickListener itemClickListener;
     //子View状态初始化标识
     private boolean initChilState = false;
-    //子View在数据集中的位置
+    //最底层的子View对应的Adapter数据集合中的位置
     private int position = 0;
+    private OnWeakItemClickListener itemClickListener;
+    private int screenHeight;
+    private int screenWidth;
+    private int bottomViewHolderPosition = cardCount - 1;
 
     public WeakCardOverlapLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.setClipChildren(false);
         viewStackUpHeight = Tool.dip2px(context, viewStackUpHeight / 2);
         viewDragHelper = ViewDragHelper.create(this, 1.0f, new DragCallbackImpl());
+        screenHeight = Tool.getScreenHeight(context);
+        screenWidth = Tool.getScreenWidth(context);
     }
 
     /**
@@ -158,16 +165,19 @@ public class WeakCardOverlapLayout extends RelativeLayout implements WeakViewAda
             float curY = releasedChild.getY();
             int vW = releasedChild.getWidth();
             int vH = releasedChild.getHeight();
-            moveX = (int) (curX * 2.3);
-            moveY = (int) (curY * 2.3);
             //如果在X或者Y抽方向上移动的距离大于卡片宽度或者高度一半的话，则移除屏幕之外
             if (Math.abs(curX) > vW / 2 || Math.abs(curY) > vH / 2) {
-                //这里简单的将在x、y轴滑动的距离扩大2倍当做卡片移动的方向
-                viewDragHelper.smoothSlideViewTo(releasedChild, moveX, moveY);
-                isRemoveChil = true;
+                moveX = (int) (curX);
+                moveY = (int) (curY);
+                while (Math.abs(moveX) < screenWidth || Math.abs(moveY) < screenHeight) {
+                    moveX += curX;
+                    moveY += curY;
+                }
             } else {
-                viewDragHelper.smoothSlideViewTo(releasedChild, 0, 0);
+                moveX = 0;
+                moveY = 0;
             }
+            isRemoveChil = viewDragHelper.settleCapturedViewAt(moveX, moveY);
             invalidate();
         }
 
@@ -182,12 +192,17 @@ public class WeakCardOverlapLayout extends RelativeLayout implements WeakViewAda
          */
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
+            if (!isRemoveChil)
+                return;
             //这里首先判断正在改变位置的View是否是刚刚拖动松手后滑出屏幕外的View，如果是则继续判断，它是否已经完全滑动出屏幕外。
-            if (isRemoveChil && moveX != 0 && moveY != 0 && Math.abs(left) >= Math.abs(moveX) && Math.abs(top) >= Math.abs(moveY)) {
-                isRemoveChil = false;
+            int[] location = new int[2];
+            changedView.getLocationInWindow(location); //获取在当前窗口内的绝对坐标
+            changedView.getLocationOnScreen(location);//获取在整个屏幕内的绝对坐标
+            if (moveX != 0 && moveY != 0 && Math.abs(left) >= Math.abs(moveX) && Math.abs(top) >= Math.abs(moveY)) {
                 moveX = 0;
                 moveY = 0;
                 notifyView();
+                isRemoveChil = false;
             }
         }
     }
@@ -271,7 +286,6 @@ public class WeakCardOverlapLayout extends RelativeLayout implements WeakViewAda
         initChilState(cardBottomPosition, view);
     }
 
-    int bottomViewHolderPosition = cardCount - 1;
 
     private void addBottomView(final int position, final View view) {
         view.setOnClickListener(new OnClickListener() {
@@ -333,11 +347,16 @@ public class WeakCardOverlapLayout extends RelativeLayout implements WeakViewAda
         this.viewStackUpHeight = viewStackUpHeight;
     }
 
-    public void setOnItemClickListener(WeakCardOverlapLayout.OnItemClickListener itemClickListener) {
+    public void setOnItemClickListener(OnWeakItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
-    public interface OnItemClickListener {
-        void onWeakItemClickListener(int position, View view);
+    /**
+     * 设置卡片一次缩小比例
+     *
+     * @param scaleVal 0-1;
+     */
+    public void setScaleVal(float scaleVal) {
+        this.scaleVal = scaleVal;
     }
 }

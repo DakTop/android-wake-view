@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.dak.weakview.adapter.WeakViewAdapter;
+import com.dak.weakview.interfaces.OnWeakItemClickListener;
 
 
 /**
@@ -14,7 +15,7 @@ import com.dak.weakview.adapter.WeakViewAdapter;
  */
 public class WeakLinearLayout extends LinearLayout implements WeakViewAdapter.OnNotifyDataLisetener {
     private WeakViewAdapter adapter;
-    private OnItemClickListener itemClickListener;
+    private OnWeakItemClickListener itemClickListener;
 
     public WeakLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,11 +54,7 @@ public class WeakLinearLayout extends LinearLayout implements WeakViewAdapter.On
         }
     }
 
-    public interface OnItemClickListener {
-        void onWeakItemClickListener(int position, View view);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+    public void setOnItemClickListener(OnWeakItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 

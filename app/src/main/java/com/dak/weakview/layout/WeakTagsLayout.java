@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.dak.weakview.R;
 import com.dak.weakview.adapter.WeakTagsAdapter;
 import com.dak.weakview.adapter.WeakViewAdapter;
+import com.dak.weakview.interfaces.OnWeakItemClickListener;
 import com.dak.weakview.view.WeakTagsTagView;
 
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
      */
     private RectF backgroundRect;
     private Paint paint;
-    private OnTagItemClickListener onItemClickListener;
+    private OnWeakItemClickListener onItemClickListener;
     //被点击的子View的位置
     private int clickPosition = -1;
     //单击选择模式
@@ -316,7 +317,7 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
                             clickSelectMore(clickPosition);
                             break;
                     }
-                    onItemClickListener.onTagItemClickListener(clickPosition, getChildAt(clickPosition));
+                    onItemClickListener.onWeakItemClickListener(clickPosition, getChildAt(clickPosition));
                     clickPosition = -1;
                 }
                 break;
@@ -368,11 +369,7 @@ public class WeakTagsLayout extends ViewGroup implements WeakViewAdapter.OnNotif
         return rect.contains((int) event.getX(), (int) event.getY());
     }
 
-    public interface OnTagItemClickListener {
-        void onTagItemClickListener(int position, View view);
-    }
-
-    public void setOnItemClickListener(OnTagItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnWeakItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
